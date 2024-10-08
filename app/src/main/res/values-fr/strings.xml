@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Yam\'s</string>
+    <string name="play">Jouer</string>
+    <string name="change_language">Changer de langue</string>
+    <string name="add_player">Ajouter un joueur</string>
+    <string name="start_game">Lancer la partie</string>
+    <string name="roll">Lancer les dés</string>
+    <string name="switch_to_ia">Passer à l\'IA</string>
+    <string name="switch_to_player">Passer au joueur</string>
+    <string name="remove_player">Supprimer le joueur</string>
+    <string name="player_name">Nom du joueur</string>
+    <string name="select_language">Sélectionner la langue</string>
+    <string name="return_menu">Retour au menu</string>
+</resources>
