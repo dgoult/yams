@@ -1,5 +1,7 @@
 package com.limayrac.yams;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.view.View;
@@ -28,6 +30,7 @@ public class GameActivity extends AppCompatActivity {
     private AnimationDrawable[] diceAnimations = new AnimationDrawable[5]; // Animations pour chaque dé
     private int rollsRemaining = 3; // Nombre de lancers restants (max 3)
     private TextView rollsRemainingTextView; // TextView pour afficher les lancers restants
+    private TextView lockedDiceSumTextView; // TextView pour afficher la somme des dés gardés
     private LinearLayout lockedDiceLayout; // Layout pour les dés gardés
     private ScrollView scoreTableLayout; // Layout pour le tableau des scores
     private HashMap<Player, Score> playerScores = new HashMap<>(); // Scores des joueurs
@@ -44,6 +47,10 @@ public class GameActivity extends AppCompatActivity {
         Button showScoreTableButton = findViewById(R.id.show_score_table_button);
         showScoreTableButton.setOnClickListener(v -> toggleScoreTableVisibility());
 
+        // Initialiser les éléments d'interface
+        Button pauseButton = findViewById(R.id.pause_button);
+        pauseButton.setOnClickListener(v -> showPauseDialog());
+
         // Initialiser le TextView du joueur à qui est le tour
         currentPlayerText = findViewById(R.id.current_player_text);
 
@@ -57,6 +64,10 @@ public class GameActivity extends AppCompatActivity {
         // Initialisation du TextView pour les lancers restants
         rollsRemainingTextView = findViewById(R.id.rolls_remaining_text);
         updateRollsRemainingText(); // Met à jour le texte affichant le nombre de lancers restants
+
+        // Initialisation du TextView pour afficher la somme des dés gardés
+        lockedDiceSumTextView = findViewById(R.id.locked_dice_sum_text);
+        updateLockedDiceSum(); // Met à jour la somme des dés gardés après chaque action
 
         // Initialisation du layout pour les dés gardés
         lockedDiceLayout = findViewById(R.id.locked_dice_layout);
@@ -91,6 +102,22 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    // Méthode pour afficher la boîte de dialogue de pause
+    private void showPauseDialog() {
+        // Créer une boîte de dialogue pour mettre en pause ou quitter
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.pause_menu_title)
+                .setMessage(R.string.pause_menu_message)
+                .setPositiveButton(R.string.resume, (dialog, which) -> dialog.dismiss()) // Reprendre la partie
+                .setNegativeButton(R.string.quit, (dialog, which) -> {
+                    Intent intent = new Intent(GameActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish(); // Fermer l'activité actuelle
+                })
+                .setCancelable(false) // Empêche la fermeture de la boîte de dialogue en dehors des boutons
+                .show();
+    }
+
     // Méthode pour gérer le lancer des dés
     private void rollDice() {
         if (rollsRemaining > 0) { // S'assurer qu'il reste des lancers disponibles
@@ -113,6 +140,8 @@ public class GameActivity extends AppCompatActivity {
                 }
                 rollsRemaining--; // Décrémente le nombre de lancers restants
                 updateRollsRemainingText(); // Met à jour l'affichage des lancers restants
+                updateLockedDiceSum(); // Met à jour la somme des dés
+                checkForCombinations(); // Vérifie les combinaisons majeures et mineures possibles
 
                 if (rollsRemaining == 0) {
                     showScoreTable(); // Affiche le tableau des scores après les lancers
@@ -129,8 +158,20 @@ public class GameActivity extends AppCompatActivity {
 
     // Méthode pour verrouiller ou déverrouiller un dé
     private void toggleLockDice(int index) {
+        // Vérifier si l'animation du dé est terminée avant de permettre le verrouillage
+        if (diceAnimations[index].isRunning()) {
+            // Si l'animation est encore en cours, ne pas permettre de verrouiller le dé
+            return;
+        }
+
         diceLocked[index] = !diceLocked[index]; // Inverse l'état du dé (gardé ou non)
+
         if (diceLocked[index]) {
+            // Vérifiez si le dé a déjà un parent, et s'il en a un, retirez-le de son parent
+            if (diceImages[index].getParent() != null) {
+                ((ViewGroup) diceImages[index].getParent()).removeView(diceImages[index]);
+            }
+
             // Déplacer le dé dans la section des dés gardés en bas
             lockedDiceLayout.addView(diceImages[index]);
             diceImages[index].setAlpha(0.5f); // Diminue l'opacité pour indiquer que le dé est gardé
@@ -139,10 +180,18 @@ public class GameActivity extends AppCompatActivity {
             restoreDiceToOriginalPosition(index);
             diceImages[index].setAlpha(1f); // Rétablit l'opacité normale pour indiquer que le dé sera relancé
         }
+
+        updateLockedDiceSum(); // Met à jour la somme des dés gardés après chaque modification
+        checkForCombinations(); // Vérifie les combinaisons majeures et mineures possibles
     }
 
     // Méthode pour restaurer un dé à sa position d'origine si déverrouillé
     private void restoreDiceToOriginalPosition(int index) {
+        // Vérifiez si le dé a déjà un parent, et s'il en a un, retirez-le de son parent
+        if (diceImages[index].getParent() != null) {
+            ((ViewGroup) diceImages[index].getParent()).removeView(diceImages[index]);
+        }
+
         // Si le dé est dans la première ligne (les deux premiers dés)
         if (index < 2) {
             LinearLayout lineTwoDice = findViewById(R.id.line_two_dice);
@@ -154,9 +203,94 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    // Méthode pour calculer et afficher la somme des dés gardés
+    private void updateLockedDiceSum() {
+        lockedDiceSumTextView.setText(getString(R.string.locked_dice_sum, calculateSumForLockedDice())); // Met à jour l'affichage avec la somme des dés gardés
+    }
+
     // Méthode pour mettre à jour l'affichage du nombre de lancers restants
     private void updateRollsRemainingText() {
         rollsRemainingTextView.setText(getString(R.string.rolls_remaining, rollsRemaining));
+    }
+
+    private void checkForCombinations() {
+        LinearLayout scoreOptionsLayout = findViewById(R.id.score_options_layout);
+        scoreOptionsLayout.removeAllViews(); // Supprimer les anciens boutons avant de les regénérer
+
+        // Vérifier les combinaisons majeures et mineures
+
+        // Utilisation de la méthode pour compter le nombre de dés verrouillés pour chaque valeur
+        int ones = countLockedDiceWithValue(1);
+        int twos = countLockedDiceWithValue(2)*2;
+        int threes = countLockedDiceWithValue(3)*3;
+        int fours = countLockedDiceWithValue(4)*4;
+        int fives = countLockedDiceWithValue(5)*5;
+        int sixes = countLockedDiceWithValue(6)*6;
+
+        int brelan = calculateBrelan();
+        int carre = calculateCarre();
+        int full = calculateFull();
+        int petiteSuite = calculatePetiteSuite();
+        int grandeSuite = calculateGrandeSuite();
+        int yams = calculateYams();
+
+        // Ajouter des boutons pour chaque combinaison trouvée en utilisant les ressources de chaîne
+        if (ones > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_one), ones);
+        if (twos > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_two), twos);
+        if (threes > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_three), threes);
+        if (fours > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_four), fours);
+        if (fives > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_five), fives);
+        if (sixes > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_six), sixes);
+        if (brelan > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.brelan), brelan);
+        if (carre > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.carre), carre);
+        if (full > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.full), full);
+        if (petiteSuite > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.petite_suite), petiteSuite);
+        if (grandeSuite > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.grande_suite), grandeSuite);
+        if (yams > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.yams), yams);
+    }
+
+    private void addScoreOptionButton(LinearLayout layout, String text, int score) {
+        Button scoreButton = new Button(this);
+        scoreButton.setText(text + " : " + score + " points");
+        layout.addView(scoreButton);
+
+        // Logique pour sélectionner cette option et attribuer le score
+        scoreButton.setOnClickListener(v -> {
+            fillScoreForCurrentPlayer(text, score);
+            layout.removeAllViews(); // Supprimer les options après sélection
+            passTurnToNextPlayer(); // Passer au joueur suivant
+        });
+    }
+
+    private void fillScoreForCurrentPlayer(String figure, int score) {
+        Score playerScore = playerScores.get(players.get(currentPlayerIndex));
+
+        // Comparer les figures en utilisant les ressources de chaîne
+        if (figure.equals(getString(R.string.score_one))) {
+            playerScore.ones = score;
+        } else if (figure.equals(getString(R.string.score_two))) {
+            playerScore.twos = score;
+        } else if (figure.equals(getString(R.string.score_three))) {
+            playerScore.threes = score;
+        } else if (figure.equals(getString(R.string.score_four))) {
+            playerScore.fours = score;
+        } else if (figure.equals(getString(R.string.score_five))) {
+            playerScore.fives = score;
+        } else if (figure.equals(getString(R.string.score_six))) {
+            playerScore.sixes = score;
+        } else if (figure.equals(getString(R.string.brelan))) {
+            playerScore.brelan = score;
+        } else if (figure.equals(getString(R.string.carre))) {
+            playerScore.carre = score;
+        } else if (figure.equals(getString(R.string.full))) {
+            playerScore.full = score;
+        } else if (figure.equals(getString(R.string.petite_suite))) {
+            playerScore.petiteSuite = score;
+        } else if (figure.equals(getString(R.string.grande_suite))) {
+            playerScore.grandeSuite = score;
+        } else if (figure.equals(getString(R.string.yams))) {
+            playerScore.yams = score;
+        }
     }
 
     // Méthode pour afficher le tableau des scores
@@ -248,7 +382,7 @@ public class GameActivity extends AppCompatActivity {
     // Remplir une figure mineure (1 à 6)
     private void fillScoreForMinor(Player player, int diceNumber) {
         Score playerScore = playerScores.get(player);
-        int sum = calculateSumForDice(diceNumber);
+        int sum = calculateSumForLockedDice();
         switch (diceNumber) {
             case 1: playerScore.ones = sum; break;
             case 2: playerScore.twos = sum; break;
@@ -273,15 +407,24 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    // Calculer la somme pour une figure mineure (1 à 6)
-    private int calculateSumForDice(int diceNumber) {
+    private int calculateSumForLockedDice() {
         int sum = 0;
-        for (int value : diceValues) {
-            if (value == diceNumber) {
-                sum += value;
+        for (int i = 0; i < diceValues.length; i++) {
+            if (diceLocked[i]) {
+                sum += diceValues[i];
             }
         }
         return sum;
+    }
+
+    private int countLockedDiceWithValue(int diceValue) {
+        int count = 0;
+        for (int i = 0; i < diceValues.length; i++) {
+            if (diceLocked[i] && diceValues[i] == diceValue) {
+                count++;
+            }
+        }
+        return count;
     }
 
     // Calculs pour les figures majeures (brelan, carré, etc.)

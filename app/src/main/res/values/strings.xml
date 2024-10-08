@@ -30,4 +30,10 @@
     <string name="yams">Yahtzee</string>
     <string name="chance">Chance</string>
     <string name="total_general">Grand Total</string>
+    <string name="locked_dice_sum">Sum of locked dices : %1$d</string>
+    <string name="pause">Pause</string>
+    <string name="pause_menu_title">Pause</string>
+    <string name="pause_menu_message">What do you want to do?</string>
+    <string name="resume">Resume</string>
+    <string name="quit">Quit</string>
 </resources>

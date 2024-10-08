@@ -27,7 +27,13 @@
     <string name="full">Full</string>
     <string name="petite_suite">Petite Suite</string>
     <string name="grande_suite">Grande Suite</string>
-    <string name="yams">Yam's</string>
+    <string name="yams">Yam\'s</string>
     <string name="chance">Chance</string>
     <string name="total_general">Total Général</string>
+    <string name="locked_dice_sum">Somme des dés gardés : %1$d</string>
+    <string name="pause">Pause</string>
+    <string name="pause_menu_title">Pause</string>
+    <string name="pause_menu_message">Que souhaitez-vous faire ?</string>
+    <string name="resume">Reprendre</string>
+    <string name="quit">Quitter</string>
 </resources>
