@@ -11,4 +11,23 @@
     <string name="player_name">Nom du joueur</string>
     <string name="select_language">Sélectionner la langue</string>
     <string name="return_menu">Retour au menu</string>
+    <string name="rolls_remaining">Lancers restants : %d</string>
+    <string name="show_score_table">Tableau des scores</string>
+    <string name="show_turn">Tour de : %1$s </string>
+    <string name="score_one">1 - Somme des 1</string>
+    <string name="score_two">2 - Somme des 2</string>
+    <string name="score_three">3 - Somme des 3</string>
+    <string name="score_four">4 - Somme des 4</string>
+    <string name="score_five">5 - Somme des 5</string>
+    <string name="score_six">6 - Somme des 6</string>
+    <string name="total_minor">Total Mineur</string>
+    <string name="bonus">Bonus 35 (+63)</string>
+    <string name="brelan">Brelan</string>
+    <string name="carre">Carré</string>
+    <string name="full">Full</string>
+    <string name="petite_suite">Petite Suite</string>
+    <string name="grande_suite">Grande Suite</string>
+    <string name="yams">Yam's</string>
+    <string name="chance">Chance</string>
+    <string name="total_general">Total Général</string>
 </resources>

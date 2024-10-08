@@ -11,4 +11,23 @@
     <string name="player_name">Player Name</string>
     <string name="select_language">Select Language</string>
     <string name="return_menu">Return</string>
+    <string name="rolls_remaining">Remaining roll : %d</string>
+    <string name="show_score_table">Score</string>
+    <string name="show_turn">Turn to : %1$s</string>
+    <string name="score_one">1 - Sum of 1</string>
+    <string name="score_two">2 - Sum of 2</string>
+    <string name="score_three">3 - Sum of 3</string>
+    <string name="score_four">4 - Sum of 4</string>
+    <string name="score_five">5 - Sum of 5</string>
+    <string name="score_six">6 - Sum of 6</string>
+    <string name="total_minor">Minor Total</string>
+    <string name="bonus">Bonus 35 (+63)</string>
+    <string name="brelan">Three of a kind</string>
+    <string name="carre">Four of a kind</string>
+    <string name="full">Full House</string>
+    <string name="petite_suite">Small Straight</string>
+    <string name="grande_suite">Large Straight</string>
+    <string name="yams">Yahtzee</string>
+    <string name="chance">Chance</string>
+    <string name="total_general">Grand Total</string>
 </resources>
