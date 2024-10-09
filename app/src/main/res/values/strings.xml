@@ -41,5 +41,4 @@
     <string name="cancel">Cancel</string>
     <string name="game_over">Game Over</string>
     <string name="winner_message">%1$s won with a score of %2$d points!</string>
-    <string name="ok">OK</string>
 </resources>

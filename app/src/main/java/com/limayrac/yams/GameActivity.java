@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -123,7 +122,7 @@ public class GameActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish(); // Fermer l'activité actuelle
                 })
-                .setCancelable(false) // Empêche la fermeture de la boîte de dialogue en dehors des boutons
+                .setCancelable(false) // Ne permet pas la fermeture de la boîte de dialogue en dehors des boutons
                 .show();
     }
 
@@ -139,12 +138,30 @@ public class GameActivity extends AppCompatActivity {
         for (ImageView dice : diceImages) {
             dice.setClickable(true);
         }
+        rollButton.setClickable(true);
+    }
+
+    private void disableRollInteraction() {
+        rollButton.setClickable(false);
+    }
+
+    private void enableRollInteraction() {
+        rollButton.setClickable(true);
+    }
+
+    private void disableSetScoreButtonInteraction() {
+        rollButton.setClickable(false);
+    }
+
+    private void enableSetScoreButtonInteraction() {
+        rollButton.setClickable(true);
     }
 
     // Méthode pour gérer le lancer des dés
     private void rollDice() {
         if (rollsRemaining > 0) { // S'assurer qu'il reste des lancers disponibles
             disableDiceInteraction(); // Désactive les interactions avec les dés
+            disableRollInteraction(); // Désactive les interactions avec le bouton de lancé
 
             // Rendre les dés visibles et actifs après le premier lancer
             for (ImageView dice : diceImages) {
@@ -175,6 +192,7 @@ public class GameActivity extends AppCompatActivity {
                 updateLockedDiceSum(); // Met à jour la somme des dés
                 checkForCombinations(); // Vérifie les combinaisons majeures et mineures possibles
                 enableDiceInteraction(); // Réactive les interactions avec les dés après l'animation
+                enableRollInteraction(); // Réactive les interactions avec le bouton de lancer après l'animation
 
 //                if (rollsRemaining == 0) {
 //                    new Handler().postDelayed(() -> showScoreTable(), 2000); // 1 secondes Affiche le tableau des scores après les lancers
@@ -387,18 +405,19 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void addBarFigureOption(LinearLayout layout) {
-        Button barrerButton = new Button(this);
-        barrerButton.setText(getString(R.string.bar_figure));
-        barrerButton.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light)); // Mettre le bouton en rouge
-        layout.addView(barrerButton);
+        Button barButton = new Button(this);
+        barButton.setText(getString(R.string.bar_figure));
+        barButton.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light)); // Mettre le bouton en rouge
+        layout.addView(barButton);
 
         // Lorsque le joueur clique sur le bouton, lui proposer de barrer une figure
-        barrerButton.setOnClickListener(v -> {
-            showBarFigureDialog(layout);
+        barButton.setOnClickListener(v -> {
+            showBarFigureDialog(layout, barButton);
+            barButton.setClickable(false);
         });
     }
 
-    private void showBarFigureDialog(LinearLayout layout) {
+    private void showBarFigureDialog(LinearLayout layout, Button barButton) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.choose_figure_to_bar);
 
@@ -409,7 +428,12 @@ public class GameActivity extends AppCompatActivity {
             layout.removeAllViews(); // Supprimer les options après sélection
         });
 
-        builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(R.string.cancel, (dialog, which) ->
+        {
+            dialog.dismiss();
+            barButton.setClickable(true);
+        });
+        builder.setCancelable(false);
         builder.show();
     }
 
@@ -699,12 +723,13 @@ public class GameActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.game_over)
                 .setMessage(message)
-                .setPositiveButton(R.string.ok, (dialog, which) -> {
+                .setNegativeButton(R.string.resume, (dialog, which) -> dialog.dismiss()) // Reprendre la partie
+                .setPositiveButton(R.string.quit, (dialog, which) -> {
                     Intent intent = new Intent(GameActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish(); // Fermer l'activité actuelle
                 })
-                .setCancelable(false)
+                .setCancelable(true)
                 .show();
     }
 
