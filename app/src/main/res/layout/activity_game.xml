@@ -2,166 +2,207 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Layout du plateau de jeu -->
-    <RelativeLayout
+    <!-- ScrollView pour permettre le défilement sur toute la page -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <!-- Bouton de pause -->
-        <Button
-            android:id="@+id/pause_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="10dp"
-            android:text="@string/pause"
-            android:backgroundTint="@color/general_btn_secondary" />
-
-        <!-- Bouton d'affichage des scores -->
-        <Button
-            android:id="@+id/show_score_table_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="@color/general_btn"
-            android:text="@string/show_score_table" />
-
-        <!-- Affichage du joueur actuel -->
-        <TextView
-            android:id="@+id/current_player_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
-            android:textStyle="bold"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:layout_below="@id/show_score_table_button"
-            android:text="@string/show_turn" />
-
-        <!-- Ligne de deux dés -->
-        <LinearLayout
-            android:id="@+id/line_two_dice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/current_player_text"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/dice1"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_margin="5dp" />
-
-            <ImageView
-                android:id="@+id/dice2"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_margin="5dp" />
-        </LinearLayout>
-
-        <!-- Ligne de trois dés -->
-        <LinearLayout
-            android:id="@+id/line_three_dice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/line_two_dice"
-            android:layout_centerHorizontal="true"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp">
-
-            <ImageView
-                android:id="@+id/dice3"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_margin="5dp" />
-            <ImageView
-                android:id="@+id/dice4"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_margin="5dp" />
-            <ImageView
-                android:id="@+id/dice5"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_margin="5dp" />
-        </LinearLayout>
-
-        <!-- Lancers restants -->
-        <TextView
-            android:id="@+id/rolls_remaining_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/rolls_remaining"
-            android:layout_below="@id/line_three_dice"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:padding="10dp" />
-
-        <!-- Layout pour afficher les dés garder -->
-        <LinearLayout
-            android:id="@+id/locked_dice_layout"
+        <!-- Layout principal contenant tous les éléments -->
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/rolls_remaining_text"
-            android:layout_marginBottom="20dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- TextView pour afficher la somme des dés gardés -->
-        <TextView
-            android:id="@+id/locked_dice_sum_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/locked_dice_layout"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:text="@string/locked_dice_sum"
-            android:textSize="18sp"
-            android:textColor="@android:color/black" />
+            <!-- Image en arrière-plan -->
+            <ImageView
+                android:id="@+id/background_image"
+                android:layout_marginTop="100dp"
+                android:layout_width="wrap_content"
+                android:layout_height="350dp"
+                android:src="@drawable/yams_plate"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center"/>
 
-        <!-- ScrollView pour rendre les boutons défilables -->
-        <ScrollView
-            android:id="@+id/scroll_score_options"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/locked_dice_sum_text"
-            android:layout_above="@id/roll_button"
-            android:layout_marginTop="20dp"
-            android:fillViewport="true">
-
-            <!-- Layout pour afficher les combinaisons possibles -->
-            <LinearLayout
-                android:id="@+id/score_options_layout"
+            <!-- Layout du plateau de jeu -->
+            <RelativeLayout
+                android:id="@+id/game_plate"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center">
-            </LinearLayout>
+                android:layout_height="wrap_content">
 
-        </ScrollView>
+                <!-- Bouton de pause -->
+                <Button
+                    android:id="@+id/pause_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/pause"
+                    android:backgroundTint="@color/general_btn_secondary" />
 
-        <!-- Bouton de lancer -->
-        <Button
-            android:id="@+id/roll_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/roll"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
+                <!-- Bouton d'affichage des scores -->
+                <Button
+                    android:id="@+id/show_score_table_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTint="@color/general_btn"
+                    android:text="@string/show_score_table" />
 
-    </RelativeLayout>
+                <!-- Affichage du joueur actuel -->
+                <TextView
+                    android:id="@+id/current_player_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:layout_below="@id/show_score_table_button"
+                    android:text="@string/show_turn" />
+
+                <!-- Ligne de deux dés (dés lancés) -->
+                <LinearLayout
+                    android:id="@+id/line_two_dice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/current_player_text"
+                    android:layout_marginTop="70dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/dice1"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_margin="5dp" />
+
+                    <ImageView
+                        android:id="@+id/dice2"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_margin="5dp" />
+                </LinearLayout>
+
+                <!-- Ligne de trois dés (dés lancés) -->
+                <LinearLayout
+                    android:id="@+id/line_three_dice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/line_two_dice"
+                    android:layout_centerHorizontal="true"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/dice3"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_margin="5dp" />
+                    <ImageView
+                        android:id="@+id/dice4"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_margin="5dp" />
+                    <ImageView
+                        android:id="@+id/dice5"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_margin="5dp" />
+                </LinearLayout>
+
+                <!-- Lancers restants -->
+                <TextView
+                    android:id="@+id/rolls_remaining_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rolls_remaining"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="450dp"
+                    android:padding="10dp" />
+
+                <!-- Dés verrouillés en deux lignes -->
+                <LinearLayout
+                    android:id="@+id/locked_dice_layout_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/rolls_remaining_text"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <!-- Ligne de deux dés verrouillés -->
+                    <LinearLayout
+                        android:id="@+id/locked_dice_line_one"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+                    </LinearLayout>
+
+                    <!-- Ligne de trois dés verrouillés -->
+                    <LinearLayout
+                        android:id="@+id/locked_dice_line_two"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- TextView pour afficher la somme des dés gardés -->
+                <TextView
+                    android:id="@+id/locked_dice_sum_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/locked_dice_layout_container"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/locked_dice_sum"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/black" />
+
+                <!-- ScrollView pour rendre les boutons défilables -->
+                <ScrollView
+                    android:id="@+id/scroll_score_options"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/locked_dice_sum_text"
+                    android:layout_marginTop="20dp"
+                    android:fillViewport="true">
+
+                    <!-- Layout pour afficher les combinaisons possibles -->
+                    <LinearLayout
+                        android:id="@+id/score_options_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center">
+                    </LinearLayout>
+
+                </ScrollView>
+
+                <!-- Bouton de lancer -->
+                <Button
+                    android:id="@+id/roll_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/scroll_score_options"
+                    android:text="@string/roll"
+                    android:layout_centerHorizontal="true"  />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+    </ScrollView>
 
     <!-- Layout du tableau des scores (superposé) -->
     <ScrollView
         android:id="@+id/score_table_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="80dp"
         android:visibility="gone"
         android:background="#AA000000"> <!-- Fond semi-transparent pour l'effet de superposition -->
 

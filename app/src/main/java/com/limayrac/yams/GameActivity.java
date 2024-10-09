@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -23,6 +24,7 @@ public class GameActivity extends AppCompatActivity {
     private ArrayList<Player> players;
     private int currentPlayerIndex = 0; // Index du joueur actuel
     private TextView currentPlayerText; // TextView pour afficher le nom du joueur actuel
+    private Button rollButton; // Button pour lancé les dés avec décompte
     private int[] diceValues = new int[5]; // Valeurs des dés après chaque lancer
     private boolean[] diceLocked = new boolean[5]; // Garde trace des dés à garder
     private ImageView[] diceImages = new ImageView[5]; // Références aux ImageView pour chaque dé
@@ -61,6 +63,17 @@ public class GameActivity extends AppCompatActivity {
         diceImages[3] = findViewById(R.id.dice4);
         diceImages[4] = findViewById(R.id.dice5);
 
+        // Initialisation des dés : les rendre invisibles et désactiver les interactions
+        for (ImageView dice : diceImages) {
+            dice.setVisibility(View.INVISIBLE); // Désactiver la visibilité
+            dice.setClickable(false); // Désactiver les clics
+            dice.setEnabled(false); // Désactiver l'état activé
+        }
+
+        // Initialisation du bouton de lancement des dés
+        rollButton = findViewById(R.id.roll_button);
+        rollButton.setOnClickListener(view -> rollDice());
+
         // Initialisation du TextView pour les lancers restants
         rollsRemainingTextView = findViewById(R.id.rolls_remaining_text);
         updateRollsRemainingText(); // Met à jour le texte affichant le nombre de lancers restants
@@ -70,14 +83,10 @@ public class GameActivity extends AppCompatActivity {
         updateLockedDiceSum(); // Met à jour la somme des dés gardés après chaque action
 
         // Initialisation du layout pour les dés gardés
-        lockedDiceLayout = findViewById(R.id.locked_dice_layout);
+        lockedDiceLayout = findViewById(R.id.locked_dice_layout_container);
 
         // Initialisation du layout pour le tableau des scores
         scoreTableLayout = findViewById(R.id.score_table_layout);
-
-        // Initialisation du bouton de lancement
-        Button rollButton = findViewById(R.id.roll_button);
-        rollButton.setOnClickListener(view -> rollDice());
 
         // Initialisation des scores pour chaque joueur
         for (Player player : players) {
@@ -118,9 +127,32 @@ public class GameActivity extends AppCompatActivity {
                 .show();
     }
 
+    // Méthode pour désactiver les interactions sur les dés
+    private void disableDiceInteraction() {
+        for (ImageView dice : diceImages) {
+            dice.setClickable(false);
+        }
+    }
+
+    // Méthode pour réactiver les interactions sur les dés
+    private void enableDiceInteraction() {
+        for (ImageView dice : diceImages) {
+            dice.setClickable(true);
+        }
+    }
+
     // Méthode pour gérer le lancer des dés
     private void rollDice() {
         if (rollsRemaining > 0) { // S'assurer qu'il reste des lancers disponibles
+            disableDiceInteraction(); // Désactive les interactions avec les dés
+
+            // Rendre les dés visibles et actifs après le premier lancer
+            for (ImageView dice : diceImages) {
+                dice.setVisibility(View.VISIBLE); // Les rendre visibles
+                dice.setEnabled(true); // Les rendre activables
+                dice.setClickable(true); // Les rendre cliquables
+            }
+
             for (int i = 0; i < 5; i++) {
                 if (!diceLocked[i]) { // Ne relance pas les dés bloqués
                     diceImages[i].setImageResource(R.drawable.animrolling); // Définir l'animation comme l'image du dé
@@ -142,9 +174,10 @@ public class GameActivity extends AppCompatActivity {
                 updateRollsRemainingText(); // Met à jour l'affichage des lancers restants
                 updateLockedDiceSum(); // Met à jour la somme des dés
                 checkForCombinations(); // Vérifie les combinaisons majeures et mineures possibles
+                enableDiceInteraction(); // Réactive les interactions avec les dés après l'animation
 
                 if (rollsRemaining == 0) {
-                    showScoreTable(); // Affiche le tableau des scores après les lancers
+                    new Handler().postDelayed(() -> showScoreTable(), 2000); // 1 secondes Affiche le tableau des scores après les lancers
                 }
             }, 2000); // Animation pendant 2 secondes
         }
@@ -159,7 +192,7 @@ public class GameActivity extends AppCompatActivity {
     // Méthode pour verrouiller ou déverrouiller un dé
     private void toggleLockDice(int index) {
         // Vérifier si l'animation du dé est terminée avant de permettre le verrouillage
-        if (diceAnimations[index].isRunning()) {
+        if (diceImages[index].getVisibility() != View.VISIBLE || diceAnimations[index] != null && diceAnimations[index].isRunning()) {
             // Si l'animation est encore en cours, ne pas permettre de verrouiller le dé
             return;
         }
@@ -172,8 +205,15 @@ public class GameActivity extends AppCompatActivity {
                 ((ViewGroup) diceImages[index].getParent()).removeView(diceImages[index]);
             }
 
-            // Déplacer le dé dans la section des dés gardés en bas
-            lockedDiceLayout.addView(diceImages[index]);
+            // Ajouter le dé dans les lignes de dés verrouillés
+            if (index < 2) {
+                LinearLayout lineOne = findViewById(R.id.locked_dice_line_one);
+                lineOne.addView(diceImages[index]);
+            } else {
+                LinearLayout lineTwo = findViewById(R.id.locked_dice_line_two);
+                lineTwo.addView(diceImages[index]);
+            }
+
             diceImages[index].setAlpha(0.5f); // Diminue l'opacité pour indiquer que le dé est gardé
         } else {
             // Remettre le dé dans sa position d'origine et restaurer l'opacité
@@ -211,6 +251,7 @@ public class GameActivity extends AppCompatActivity {
     // Méthode pour mettre à jour l'affichage du nombre de lancers restants
     private void updateRollsRemainingText() {
         rollsRemainingTextView.setText(getString(R.string.rolls_remaining, rollsRemaining));
+        rollButton.setText(getString(R.string.roll, rollsRemaining)); // Mise à jour du bouton avec les lancers restants
     }
 
     private void checkForCombinations() {
@@ -259,6 +300,9 @@ public class GameActivity extends AppCompatActivity {
             fillScoreForCurrentPlayer(text, score);
             layout.removeAllViews(); // Supprimer les options après sélection
             passTurnToNextPlayer(); // Passer au joueur suivant
+            showScoreTable(); // Affiche les scores
+            disableDiceInteraction(); // Désactive l'intéraction des dés
+            updateLockedDiceSum(); // Met à jour la somme des dés gardés après chaque modification
         });
     }
 
@@ -362,17 +406,17 @@ public class GameActivity extends AppCompatActivity {
             rowLayout.addView(scoreTextView);
 
             // Permettre uniquement au joueur actif de remplir la case
-            if (score == -1 && actionParam != null && i == currentPlayerIndex) {
-                rowLayout.setOnClickListener(v -> {
-                    if (actionParam instanceof Integer) {
-                        fillScoreForMinor(player, (Integer) actionParam);
-                    } else if (actionParam instanceof String) {
-                        fillScoreForMajor(player, (String) actionParam);
-                    }
-                    scoreTableLayout.setVisibility(View.GONE); // Cacher le tableau après avoir rempli une ligne
-                    passTurnToNextPlayer(); // Passer au joueur suivant
-                });
-            }
+//            if (score == -1 && actionParam != null && i == currentPlayerIndex) {
+//                rowLayout.setOnClickListener(v -> {
+//                    if (actionParam instanceof Integer) {
+//                        fillScoreForMinor(player, (Integer) actionParam);
+//                    } else if (actionParam instanceof String) {
+//                        fillScoreForMajor(player, (String) actionParam);
+//                    }
+//                    scoreTableLayout.setVisibility(View.GONE); // Cacher le tableau après avoir rempli une ligne
+//                    passTurnToNextPlayer(); // Passer au joueur suivant
+//                });
+//            }
         }
 
         LinearLayout scoreTableContent = findViewById(R.id.score_table_content);
