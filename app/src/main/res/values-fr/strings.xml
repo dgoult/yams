@@ -36,7 +36,7 @@
     <string name="pause_menu_message">Que souhaitez-vous faire ?</string>
     <string name="resume">Reprendre</string>
     <string name="quit">Quitter le jeu</string>
-    <string name="bar_figure">Barrez la figure</string>
+    <string name="bar_figure">Barrez une figure</string>
     <string name="choose_figure_to_bar">Choisissez une figure à barrer</string>
     <string name="cancel">Annuler</string>
     <string name="game_over">Fin du jeu</string>
