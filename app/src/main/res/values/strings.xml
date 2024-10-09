@@ -36,4 +36,10 @@
     <string name="pause_menu_message">What do you want to do?</string>
     <string name="resume">Resume</string>
     <string name="quit">Quit Game</string>
+    <string name="bar_figure">Bar the figure</string>
+    <string name="choose_figure_to_bar">Choose a figure to bar</string>
+    <string name="cancel">Cancel</string>
+    <string name="game_over">Game Over</string>
+    <string name="winner_message">%1$s won with a score of %2$d points!</string>
+    <string name="ok">OK</string>
 </resources>

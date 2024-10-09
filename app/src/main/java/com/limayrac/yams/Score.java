@@ -50,6 +50,12 @@ public class Score {
         return total;
     }
 
+    public boolean isAllFiguresFilled() {
+        return ones != -1 && twos != -1 && threes != -1 && fours != -1 && fives != -1 && sixes != -1
+                && brelan != -1 && carre != -1 && full != -1 && petiteSuite != -1 && grandeSuite != -1
+                && yams != -1 && chance != -1;
+    }
+
     // Calculer le score total (mineur + majeur)
     public int calculateTotal() {
         return calculateMinorTotal() + calculateMajorTotal();

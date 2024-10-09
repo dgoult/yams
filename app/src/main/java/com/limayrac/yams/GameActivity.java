@@ -176,10 +176,10 @@ public class GameActivity extends AppCompatActivity {
                 checkForCombinations(); // Vérifie les combinaisons majeures et mineures possibles
                 enableDiceInteraction(); // Réactive les interactions avec les dés après l'animation
 
-                if (rollsRemaining == 0) {
-                    new Handler().postDelayed(() -> showScoreTable(), 2000); // 1 secondes Affiche le tableau des scores après les lancers
-                }
-            }, 2000); // Animation pendant 2 secondes
+//                if (rollsRemaining == 0) {
+//                    new Handler().postDelayed(() -> showScoreTable(), 2000); // 1 secondes Affiche le tableau des scores après les lancers
+//                }
+            }, 500); // Animation pendant 2 secondes
         }
     }
 
@@ -258,36 +258,86 @@ public class GameActivity extends AppCompatActivity {
         LinearLayout scoreOptionsLayout = findViewById(R.id.score_options_layout);
         scoreOptionsLayout.removeAllViews(); // Supprimer les anciens boutons avant de les regénérer
 
-        // Vérifier les combinaisons majeures et mineures
+        Score currentPlayerScore = playerScores.get(players.get(currentPlayerIndex));
 
-        // Utilisation de la méthode pour compter le nombre de dés verrouillés pour chaque valeur
+        // Variables pour vérifier si au moins une combinaison est possible
+        boolean hasCombination = false;
+
+        // Vérifier les combinaisons mineures et ajouter des boutons s'ils ne sont pas déjà remplis
         int ones = countLockedDiceWithValue(1);
-        int twos = countLockedDiceWithValue(2)*2;
-        int threes = countLockedDiceWithValue(3)*3;
-        int fours = countLockedDiceWithValue(4)*4;
-        int fives = countLockedDiceWithValue(5)*5;
-        int sixes = countLockedDiceWithValue(6)*6;
+        int twos = countLockedDiceWithValue(2) * 2;
+        int threes = countLockedDiceWithValue(3) * 3;
+        int fours = countLockedDiceWithValue(4) * 4;
+        int fives = countLockedDiceWithValue(5) * 5;
+        int sixes = countLockedDiceWithValue(6) * 6;
 
+        if (currentPlayerScore.ones == -1 && ones > 0) {
+            addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_one), ones);
+            hasCombination = true;
+        }
+        if (currentPlayerScore.twos == -1 && twos > 0) {
+            addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_two), twos);
+            hasCombination = true;
+        }
+        if (currentPlayerScore.threes == -1 && threes > 0) {
+            addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_three), threes);
+            hasCombination = true;
+        }
+        if (currentPlayerScore.fours == -1 && fours > 0) {
+            addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_four), fours);
+            hasCombination = true;
+        }
+        if (currentPlayerScore.fives == -1 && fives > 0) {
+            addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_five), fives);
+            hasCombination = true;
+        }
+        if (currentPlayerScore.sixes == -1 && sixes > 0) {
+            addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_six), sixes);
+            hasCombination = true;
+        }
+
+        // Vérifier les combinaisons majeures
         int brelan = calculateBrelan();
         int carre = calculateCarre();
         int full = calculateFull();
         int petiteSuite = calculatePetiteSuite();
         int grandeSuite = calculateGrandeSuite();
         int yams = calculateYams();
+        int chance = calculateChance();
 
-        // Ajouter des boutons pour chaque combinaison trouvée en utilisant les ressources de chaîne
-        if (ones > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_one), ones);
-        if (twos > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_two), twos);
-        if (threes > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_three), threes);
-        if (fours > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_four), fours);
-        if (fives > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_five), fives);
-        if (sixes > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.score_six), sixes);
-        if (brelan > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.brelan), brelan);
-        if (carre > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.carre), carre);
-        if (full > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.full), full);
-        if (petiteSuite > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.petite_suite), petiteSuite);
-        if (grandeSuite > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.grande_suite), grandeSuite);
-        if (yams > 0) addScoreOptionButton(scoreOptionsLayout, getString(R.string.yams), yams);
+        if (currentPlayerScore.brelan == -1 && brelan > 0) {
+            addScoreOptionButton(scoreOptionsLayout, getString(R.string.brelan), brelan);
+            hasCombination = true;
+        }
+        if (currentPlayerScore.carre == -1 && carre > 0) {
+            addScoreOptionButton(scoreOptionsLayout, getString(R.string.carre), carre);
+            hasCombination = true;
+        }
+        if (currentPlayerScore.full == -1 && full > 0) {
+            addScoreOptionButton(scoreOptionsLayout, getString(R.string.full), full);
+            hasCombination = true;
+        }
+        if (currentPlayerScore.petiteSuite == -1 && petiteSuite > 0) {
+            addScoreOptionButton(scoreOptionsLayout, getString(R.string.petite_suite), petiteSuite);
+            hasCombination = true;
+        }
+        if (currentPlayerScore.grandeSuite == -1 && grandeSuite > 0) {
+            addScoreOptionButton(scoreOptionsLayout, getString(R.string.grande_suite), grandeSuite);
+            hasCombination = true;
+        }
+        if (currentPlayerScore.yams == -1 && yams > 0) {
+            addScoreOptionButton(scoreOptionsLayout, getString(R.string.yams), yams);
+            hasCombination = true;
+        }
+        if (currentPlayerScore.chance == -1 && chance > 0) {
+            addScoreOptionButton(scoreOptionsLayout, getString(R.string.chance), chance);
+            hasCombination = true;
+        }
+
+        // Si aucune combinaison n'est possible, ajouter l'option de barrer une figure
+        if (!hasCombination) {
+            addBarFigureOption(scoreOptionsLayout);
+        }
     }
 
     private void addScoreOptionButton(LinearLayout layout, String text, int score) {
@@ -300,9 +350,6 @@ public class GameActivity extends AppCompatActivity {
             fillScoreForCurrentPlayer(text, score);
             layout.removeAllViews(); // Supprimer les options après sélection
             passTurnToNextPlayer(); // Passer au joueur suivant
-            showScoreTable(); // Affiche les scores
-            disableDiceInteraction(); // Désactive l'intéraction des dés
-            updateLockedDiceSum(); // Met à jour la somme des dés gardés après chaque modification
         });
     }
 
@@ -334,7 +381,94 @@ public class GameActivity extends AppCompatActivity {
             playerScore.grandeSuite = score;
         } else if (figure.equals(getString(R.string.yams))) {
             playerScore.yams = score;
+        } else if (figure.equals(getString(R.string.chance))) {
+            playerScore.chance = score;
         }
+    }
+
+    private void addBarFigureOption(LinearLayout layout) {
+        Button barrerButton = new Button(this);
+        barrerButton.setText(getString(R.string.bar_figure));
+        barrerButton.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light)); // Mettre le bouton en rouge
+        layout.addView(barrerButton);
+
+        // Lorsque le joueur clique sur le bouton, lui proposer de barrer une figure
+        barrerButton.setOnClickListener(v -> {
+            showBarFigureDialog(layout);
+        });
+    }
+
+    private void showBarFigureDialog(LinearLayout layout) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.choose_figure_to_bar);
+
+        String[] figures = getAvailableFiguresToBar(); // Récupérer les figures disponibles
+        builder.setItems(figures, (dialog, which) -> {
+            String selectedFigure = figures[which];
+            barFigure(selectedFigure); // Marquer la figure comme barrée
+            layout.removeAllViews(); // Supprimer les options après sélection
+        });
+
+        builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
+    private String[] getAvailableFiguresToBar() {
+        ArrayList<String> availableFigures = new ArrayList<>();
+        Score currentPlayerScore = playerScores.get(players.get(currentPlayerIndex));
+
+        if (currentPlayerScore.ones == -1) availableFigures.add(getString(R.string.score_one));
+        if (currentPlayerScore.twos == -1) availableFigures.add(getString(R.string.score_two));
+        if (currentPlayerScore.threes == -1) availableFigures.add(getString(R.string.score_three));
+        if (currentPlayerScore.fours == -1) availableFigures.add(getString(R.string.score_four));
+        if (currentPlayerScore.fives == -1) availableFigures.add(getString(R.string.score_five));
+        if (currentPlayerScore.sixes == -1) availableFigures.add(getString(R.string.score_six));
+
+        if (currentPlayerScore.brelan == -1) availableFigures.add(getString(R.string.brelan));
+        if (currentPlayerScore.carre == -1) availableFigures.add(getString(R.string.carre));
+        if (currentPlayerScore.full == -1) availableFigures.add(getString(R.string.full));
+        if (currentPlayerScore.petiteSuite == -1) availableFigures.add(getString(R.string.petite_suite));
+        if (currentPlayerScore.grandeSuite == -1) availableFigures.add(getString(R.string.grande_suite));
+        if (currentPlayerScore.yams == -1) availableFigures.add(getString(R.string.yams));
+        if (currentPlayerScore.chance == -1) availableFigures.add(getString(R.string.chance));
+
+        return availableFigures.toArray(new String[0]);
+    }
+
+    private void barFigure(String figure) {
+        Score currentPlayerScore = playerScores.get(players.get(currentPlayerIndex));
+
+        if (figure.equals(getString(R.string.score_one))) {
+            currentPlayerScore.ones = 0;
+        } else if (figure.equals(getString(R.string.score_two))) {
+            currentPlayerScore.twos = 0;
+        } else if (figure.equals(getString(R.string.score_three))) {
+            currentPlayerScore.threes = 0;
+        } else if (figure.equals(getString(R.string.score_four))) {
+            currentPlayerScore.fours = 0;
+        } else if (figure.equals(getString(R.string.score_five))) {
+            currentPlayerScore.fives = 0;
+        } else if (figure.equals(getString(R.string.score_six))) {
+            currentPlayerScore.sixes = 0;
+        } else if (figure.equals(getString(R.string.brelan))) {
+            currentPlayerScore.brelan = 0;
+        } else if (figure.equals(getString(R.string.carre))) {
+            currentPlayerScore.carre = 0;
+        } else if (figure.equals(getString(R.string.full))) {
+            currentPlayerScore.full = 0;
+        } else if (figure.equals(getString(R.string.petite_suite))) {
+            currentPlayerScore.petiteSuite = 0;
+        } else if (figure.equals(getString(R.string.grande_suite))) {
+            currentPlayerScore.grandeSuite = 0;
+        } else if (figure.equals(getString(R.string.yams))) {
+            currentPlayerScore.yams = 0;
+        } else if (figure.equals(getString(R.string.chance))) {
+            currentPlayerScore.chance = 0;
+        }
+
+        // Passer au joueur suivant
+        passTurnToNextPlayer();
+        showScoreTable(); // Affiche les scores après avoir barré une figure
     }
 
     // Méthode pour afficher le tableau des scores
@@ -404,51 +538,10 @@ public class GameActivity extends AppCompatActivity {
             scoreTextView.setText(score == -1 ? " " : String.valueOf(score)); // Affiche le score ou vide si non rempli
             scoreTextView.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
             rowLayout.addView(scoreTextView);
-
-            // Permettre uniquement au joueur actif de remplir la case
-//            if (score == -1 && actionParam != null && i == currentPlayerIndex) {
-//                rowLayout.setOnClickListener(v -> {
-//                    if (actionParam instanceof Integer) {
-//                        fillScoreForMinor(player, (Integer) actionParam);
-//                    } else if (actionParam instanceof String) {
-//                        fillScoreForMajor(player, (String) actionParam);
-//                    }
-//                    scoreTableLayout.setVisibility(View.GONE); // Cacher le tableau après avoir rempli une ligne
-//                    passTurnToNextPlayer(); // Passer au joueur suivant
-//                });
-//            }
         }
 
         LinearLayout scoreTableContent = findViewById(R.id.score_table_content);
         scoreTableContent.addView(rowLayout);
-    }
-
-    // Remplir une figure mineure (1 à 6)
-    private void fillScoreForMinor(Player player, int diceNumber) {
-        Score playerScore = playerScores.get(player);
-        int sum = calculateSumForLockedDice();
-        switch (diceNumber) {
-            case 1: playerScore.ones = sum; break;
-            case 2: playerScore.twos = sum; break;
-            case 3: playerScore.threes = sum; break;
-            case 4: playerScore.fours = sum; break;
-            case 5: playerScore.fives = sum; break;
-            case 6: playerScore.sixes = sum; break;
-        }
-    }
-
-    // Remplir une figure majeure (Brelan, Carré, Full, etc.)
-    private void fillScoreForMajor(Player player, String majorType) {
-        Score playerScore = playerScores.get(player);
-        switch (majorType) {
-            case "brelan": playerScore.brelan = calculateBrelan(); break;
-            case "carre": playerScore.carre = calculateCarre(); break;
-            case "full": playerScore.full = calculateFull(); break;
-            case "petite_suite": playerScore.petiteSuite = calculatePetiteSuite(); break;
-            case "grande_suite": playerScore.grandeSuite = calculateGrandeSuite(); break;
-            case "yams": playerScore.yams = calculateYams(); break;
-            case "chance": playerScore.chance = calculateChance(); break;
-        }
     }
 
     private int calculateSumForLockedDice() {
@@ -457,6 +550,14 @@ public class GameActivity extends AppCompatActivity {
             if (diceLocked[i]) {
                 sum += diceValues[i];
             }
+        }
+        return sum;
+    }
+
+    private int calculateSumForDice() {
+        int sum = 0;
+        for (int i = 0; i < diceValues.length; i++) {
+            sum += diceValues[i];
         }
         return sum;
     }
@@ -471,43 +572,86 @@ public class GameActivity extends AppCompatActivity {
         return count;
     }
 
-    // Calculs pour les figures majeures (brelan, carré, etc.)
     private int calculateBrelan() {
-        // Logique pour calculer un brelan
+        for (int i = 1; i <= 6; i++) {
+            if (countLockedDiceWithValue(i) >= 3) {
+                return calculateSumForDice(); // Somme des 5 dés
+            }
+        }
         return 0;
     }
 
     private int calculateCarre() {
-        // Logique pour calculer un carré
+        for (int i = 1; i <= 6; i++) {
+            if (countLockedDiceWithValue(i) >= 4) {
+                return calculateSumForDice(); // Somme des 5 dés
+            }
+        }
         return 0;
     }
 
     private int calculateFull() {
-        // Logique pour calculer un full
+        boolean hasBrelan = false;
+        boolean hasPair = false;
+
+        for (int i = 1; i <= 6; i++) {
+            if (countLockedDiceWithValue(i) == 3) {
+                hasBrelan = true;
+            } else if (countLockedDiceWithValue(i) == 2) {
+                hasPair = true;
+            }
+        }
+
+        if (hasBrelan && hasPair) {
+            return 25; // Full vaut toujours 25 points
+        }
+
         return 0;
     }
 
     private int calculatePetiteSuite() {
-        // Logique pour calculer une petite suite
+        int[] values = {1, 2, 3, 4, 5, 6};
+        if (checkSequence(4, values)) {
+            return 30; // Petite suite vaut toujours 30 points
+        }
         return 0;
     }
 
     private int calculateGrandeSuite() {
-        // Logique pour calculer une grande suite
+        int[] values = {1, 2, 3, 4, 5, 6};
+        if (checkSequence(5, values)) {
+            return 40; // Grande suite vaut toujours 40 points
+        }
         return 0;
     }
 
     private int calculateYams() {
-        // Logique pour calculer un Yam's
+        for (int i = 1; i <= 6; i++) {
+            if (countLockedDiceWithValue(i) == 5) {
+                return 50; // Yam's vaut toujours 50 points
+            }
+        }
         return 0;
     }
 
     private int calculateChance() {
-        int sum = 0;
-        for (int value : diceValues) {
-            sum += value;
+        return calculateSumForLockedDice(); // Somme des 5 dés
+    }
+
+    // Méthode utilitaire pour vérifier une suite
+    private boolean checkSequence(int length, int[] values) {
+        int count = 0;
+        for (int value : values) {
+            if (countLockedDiceWithValue(value) > 0) {
+                count++;
+                if (count == length) {
+                    return true;
+                }
+            } else {
+                count = 0;
+            }
         }
-        return sum;
+        return false;
     }
 
     private void resetDice() {
@@ -523,12 +667,59 @@ public class GameActivity extends AppCompatActivity {
         updateRollsRemainingText(); // Met à jour l'affichage des lancers restants
     }
 
+    private boolean isGameOver() {
+        for (Player player : players) {
+            Score score = playerScores.get(player);
+            if (!score.isAllFiguresFilled()) {
+                return false; // Si un joueur n'a pas rempli toutes ses figures, le jeu n'est pas terminé
+            }
+        }
+        return true; // Si tous les joueurs ont rempli leurs figures, le jeu est terminé
+    }
+
     // Passer au joueur suivant
     private void passTurnToNextPlayer() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size(); // Passer au joueur suivant
-        rollsRemaining = 3; // Réinitialiser les lancers restants
-        resetDice(); // Réinitialiser les dés
-        updateUI(); // Mettre à jour l'interface utilisateur
+        if (isGameOver()) {
+            showGameOverDialog();
+        } else {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size(); // Passer au joueur suivant
+            rollsRemaining = 3; // Réinitialiser les lancers restants
+            resetDice(); // Réinitialiser les dés
+            updateUI(); // Mettre à jour l'interface utilisateur
+            showScoreTable(); // Affiche les scores
+            disableDiceInteraction(); // Désactive l'intéraction des dés
+            updateLockedDiceSum(); // Met à jour la somme des dés gardés après chaque modification
+        }
+    }
+
+    private void showGameOverDialog() {
+        Player winner = getWinner();
+        String message = getString(R.string.winner_message, winner.getName(), playerScores.get(winner).calculateTotal());
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.game_over)
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, (dialog, which) -> {
+                    Intent intent = new Intent(GameActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish(); // Fermer l'activité actuelle
+                })
+                .setCancelable(false)
+                .show();
+    }
+
+    private Player getWinner() {
+        Player winner = players.get(0);
+        int highestScore = playerScores.get(winner).calculateTotal();
+
+        for (Player player : players) {
+            int playerScore = playerScores.get(player).calculateTotal();
+            if (playerScore > highestScore) {
+                winner = player;
+                highestScore = playerScore;
+            }
+        }
+        return winner;
     }
 
     private void updateUI() {
