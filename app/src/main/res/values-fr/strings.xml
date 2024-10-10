@@ -4,15 +4,22 @@
     <string name="change_language">Changer de langue</string>
     <string name="add_player">Ajouter un joueur</string>
     <string name="start_game">Lancer la partie</string>
+    <string-array name="ia_difficulty_levels">
+        <item>Facile</item>
+        <item>Difficile</item>
+    </string-array>
+    <string name="easy">Facile</string>
+    <string name="hard">Difficile</string>
     <string name="roll">Lancer les dés %d</string>
     <string name="switch_to_ia">Passer à l\'IA</string>
     <string name="switch_to_player">Passer au joueur</string>
     <string name="remove_player">Supprimer le joueur</string>
     <string name="player_name">Nom du joueur</string>
+    <string name="player">Joueur %d</string>
     <string name="select_language">Sélectionner la langue</string>
     <string name="return_menu">Retour au menu</string>
     <string name="rolls_remaining">Lancers restants : %d</string>
-    <string name="show_score_table">Tableau des scores</string>
+    <string name="show_score_table">Scores</string>
     <string name="show_turn">Tour de : %1$s </string>
     <string name="score_one">1 - Somme des 1</string>
     <string name="score_two">2 - Somme des 2</string>

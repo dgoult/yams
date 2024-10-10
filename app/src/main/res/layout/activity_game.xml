@@ -41,6 +41,16 @@
                     android:text="@string/pause"
                     android:backgroundTint="@color/general_btn_secondary" />
 
+                <!-- Bouton de lancer -->
+                <Button
+                    android:id="@+id/roll_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@id/current_player_text"
+                    android:layout_toStartOf="@+id/pause_button"
+                    android:layout_toEndOf="@+id/show_score_table_button"
+                    android:text="@string/roll" />
+
                 <!-- Bouton d'affichage des scores -->
                 <Button
                     android:id="@+id/show_score_table_button"
@@ -64,6 +74,16 @@
                     android:layout_marginTop="20dp"
                     android:layout_below="@id/show_score_table_button"
                     android:text="@string/show_turn" />
+
+                <TextView
+                    android:id="@+id/countdown_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="0dp"
+                    android:textSize="300sp"
+                    android:gravity="center"
+                    android:layout_centerInParent="true"
+                    android:visibility="gone" />
 
                 <!-- Ligne de deux dés (dés lancés) -->
                 <LinearLayout
@@ -183,15 +203,6 @@
                     </LinearLayout>
 
                 </ScrollView>
-
-                <!-- Bouton de lancer -->
-                <Button
-                    android:id="@+id/roll_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/scroll_score_options"
-                    android:text="@string/roll"
-                    android:layout_centerHorizontal="true"  />
 
             </RelativeLayout>
 

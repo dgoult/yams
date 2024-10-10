@@ -29,6 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:backgroundTint="@color/general_btn"
+            android:layout_marginTop="20dp"
             android:text="@string/add_player" />
 
         <androidx.recyclerview.widget.RecyclerView

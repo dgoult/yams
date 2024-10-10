@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:layout_marginTop="20dp"
+    android:background="@drawable/spinner_border">
 
     <EditText
         android:id="@+id/player_name_edit_text"
@@ -19,7 +21,8 @@
         android:layout_gravity="center"
         android:text="IA"
         android:textColor="#B77086"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/toggle_ia_button"
@@ -27,6 +30,12 @@
         android:layout_height="wrap_content"
         android:backgroundTint="#456998"
         android:text="@string/switch_to_ia" />
+
+    <Spinner
+        android:id="@+id/ia_level_spinner"
+        android:layout_width="150dp"
+        android:layout_height="45dp"
+        android:background="@drawable/spinner_border" />
 
     <Button
         android:id="@+id/remove_player_button"

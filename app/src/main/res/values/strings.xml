@@ -5,10 +5,17 @@
     <string name="add_player">Add Player</string>
     <string name="start_game">Start Game</string>
     <string name="roll">Roll Dice %d</string>
+    <string-array name="ia_difficulty_levels">
+        <item>Easy</item>
+        <item>Hard</item>
+    </string-array>
+    <string name="easy">Easy</string>
+    <string name="hard">Hard</string>
     <string name="switch_to_ia">Switch to IA</string>
     <string name="switch_to_player">Switch to Player</string>
     <string name="remove_player">Remove Player</string>
     <string name="player_name">Player Name</string>
+    <string name="player">Player %d</string>
     <string name="select_language">Select Language</string>
     <string name="return_menu">Return</string>
     <string name="rolls_remaining">Remaining roll : %d</string>

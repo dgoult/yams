@@ -38,14 +38,13 @@ public class PlayerSettingsActivity extends AppCompatActivity {
         // Gestion du bouton retour
         backButton.setOnClickListener(v -> {
             // Revenir au menu principal
-//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             Intent intent = new Intent(PlayerSettingsActivity.this, MainActivity.class);
             startActivity(intent);
             finish(); // Ferme cette activité
         });
 
         addPlayerButton.setOnClickListener(view -> {
-            players.add(new Player("Player " + (players.size() + 1), "red"));
+            players.add(new Player(getString(R.string.player, players.size() + 1) , "red"));
             playerAdapter.notifyItemInserted(players.size() - 1);
             // Debug : Voir si l'ajout a bien lieu
             Log.d("PlayerSettingsActivity", "Player added: " + players.get(players.size() - 1).getName());
