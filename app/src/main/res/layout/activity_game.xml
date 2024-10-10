@@ -163,7 +163,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:orientation="horizontal"></LinearLayout>
+                        android:orientation="horizontal"/>
 
                     <!-- Ligne de trois dés verrouillés -->
                     <LinearLayout
@@ -171,7 +171,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:orientation="horizontal"></LinearLayout>
+                        android:orientation="horizontal"/>
                 </LinearLayout>
 
                 <!-- TextView pour afficher la somme des dés gardés -->
@@ -201,7 +201,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:orientation="vertical"></LinearLayout>
+                        android:orientation="vertical"/>
 
                 </ScrollView>
 
