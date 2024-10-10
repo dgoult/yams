@@ -39,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="10dp"
-                    android:backgroundTint="#343E49"
+                    android:backgroundTint="@color/general_btn_secondary"
                     android:text="@string/pause" />
 
                 <!-- Bouton de lancer -->
