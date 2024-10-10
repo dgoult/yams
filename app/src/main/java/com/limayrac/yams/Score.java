@@ -29,12 +29,16 @@ public class Score {
         return total;
     }
 
-    // Méthode pour calculer le bonus de 35
     public int calculateBonusMinor() {
         int total = 0;
         total = calculateMinorTotal();
-        if (total >= 63) total = 35;
+        if (total >= 63) total = total + 35;
         return total;
+    }
+
+    // Méthode pour calculer le bonus de 35
+    public int calculateTotalWithBonus() {
+        return calculateMinorTotal() + calculateBonusMinor();
     }
 
     // Méthode pour calculer le total de la partie majeure
@@ -58,6 +62,6 @@ public class Score {
 
     // Calculer le score total (mineur + majeur)
     public int calculateTotal() {
-        return calculateMinorTotal() + calculateMajorTotal();
+        return calculateBonusMinor() + calculateMajorTotal();
     }
 }

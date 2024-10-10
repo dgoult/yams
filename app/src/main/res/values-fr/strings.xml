@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Yam\'s</string>
+    <string name="yahtzee_rules_url">https://fr.wikipedia.org/wiki/Yahtzee</string>
     <string name="play">Jouer</string>
     <string name="change_language">Changer de langue</string>
     <string name="add_player">Ajouter un joueur</string>
@@ -8,6 +9,13 @@
         <item>Facile</item>
         <item>Difficile</item>
     </string-array>
+    <string name="mute_music">Couper la musique</string>
+    <string name="unmute_music">Activer la musique</string>
+    <string name="mute_sfx">Couper les effets sonores</string>
+    <string name="unmute_sfx">Activer les effets sonores</string>
+    <string name="rules_button">Règles</string>
+    <string name="disable_sound">Désactiver le son</string>
+    <string name="enable_sound">Activer le son</string>
     <string name="easy">Facile</string>
     <string name="hard">Difficile</string>
     <string name="roll">Lancer les dés %d</string>
@@ -29,6 +37,7 @@
     <string name="score_six">6 - Somme des 6</string>
     <string name="total_minor">Total Mineur</string>
     <string name="bonus">Bonus 35 (+63)</string>
+    <string name="total_with_bonus">Total + Bonus 35 </string>
     <string name="brelan">Brelan</string>
     <string name="carre">Carré</string>
     <string name="full">Full</string>

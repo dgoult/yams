@@ -1,6 +1,7 @@
 package com.limayrac.yams;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -37,6 +38,7 @@ public class PlayerSettingsActivity extends AppCompatActivity {
 
         // Gestion du bouton retour
         backButton.setOnClickListener(v -> {
+            playMenuSound();
             // Revenir au menu principal
             Intent intent = new Intent(PlayerSettingsActivity.this, MainActivity.class);
             startActivity(intent);
@@ -44,6 +46,7 @@ public class PlayerSettingsActivity extends AppCompatActivity {
         });
 
         addPlayerButton.setOnClickListener(view -> {
+            playMenuSound();
             players.add(new Player(getString(R.string.player, players.size() + 1) , "red"));
             playerAdapter.notifyItemInserted(players.size() - 1);
             // Debug : Voir si l'ajout a bien lieu
@@ -53,10 +56,17 @@ public class PlayerSettingsActivity extends AppCompatActivity {
         });
 
         startGameButton.setOnClickListener(view -> {
+            playMenuSound();
             Intent intent = new Intent(PlayerSettingsActivity.this, GameActivity.class);
             intent.putParcelableArrayListExtra("players", players);
             startActivity(intent);
         });
+    }
+
+    private void playMenuSound() {
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.menu);
+        mediaPlayer.setOnCompletionListener(MediaPlayer::release); // Libère la ressource une fois le son joué
+        mediaPlayer.start();
     }
 
     // Méthode pour vérifier le nombre de joueurs humains et activer le bouton "Lancer la partie"

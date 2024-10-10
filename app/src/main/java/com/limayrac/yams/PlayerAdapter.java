@@ -1,5 +1,6 @@
 package com.limayrac.yams;
 
+import android.media.MediaPlayer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -26,6 +27,12 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
     public PlayerAdapter(ArrayList<Player> players, PlayerSettingsActivity activity) {
         this.players = players;
         this.activity = activity;
+    }
+
+    private void playMenuSound() {
+        MediaPlayer mediaPlayer = MediaPlayer.create(activity, R.raw.menu);
+        mediaPlayer.setOnCompletionListener(MediaPlayer::release); // Libère la ressource une fois le son joué
+        mediaPlayer.start();
     }
 
     @NonNull
@@ -68,6 +75,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
         });
 
         holder.toggleIaButton.setOnClickListener(v -> {
+            playMenuSound();
             player.toggleIa();
             activity.updateStartGameButtonState();
             if (player.isIa()) {
@@ -106,7 +114,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
                 holder.iaIndicator.setVisibility(View.VISIBLE);
             } else {
                 // Remettre le nom par défaut s'il redevient un joueur
-                player.setName("Player " + (position + 1));
+                player.setName(activity.getString(R.string.player, position + 1));
                 holder.playerNameEditText.setText(player.getName());
                 // Masquer le Spinner et l'indicateur IA si c'est un joueur humain
                 holder.iaIndicator.setVisibility(View.GONE);
@@ -119,6 +127,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
         });
 
         holder.removePlayerButton.setOnClickListener(v -> {
+            playMenuSound();
             activity.decrementtIaCount();
             players.remove(position);
             notifyItemRemoved(position);

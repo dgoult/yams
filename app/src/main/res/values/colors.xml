@@ -3,7 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="general_btn">#7D8A9A</color>
-    <color name="general_btn_secondary">#536171</color>
+    <color name="general_btn_secondary">#343E49</color>
+    <color name="background">#DBE0E4</color>
     <color name="highlight_color">#FFFF00</color>
     <color name="separator_color">#CCCCCC</color>
 </resources>

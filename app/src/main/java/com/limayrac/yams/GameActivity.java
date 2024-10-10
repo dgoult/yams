@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -43,11 +44,20 @@ public class GameActivity extends AppCompatActivity {
     private String lastScoreFigure = null;
     private Player lastPlayer = null;
 
+    private MediaPlayer backgroundMusicPlayer;
+    private boolean isMusicEnabled = true; // Variable pour suivre l'état de la musique
+    private boolean areSoundEffectsEnabled = true; // Variable pour suivre l'état des effets sonores
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_game);
+
+        // Initialiser la musique de fond
+        backgroundMusicPlayer = MediaPlayer.create(this, R.raw.background_music); // Assurez-vous d'avoir le fichier "background_music" dans le dossier raw
+        backgroundMusicPlayer.setLooping(true); // Boucler la musique
+        backgroundMusicPlayer.start(); // Démarrer la musique
 
         players = getIntent().getParcelableArrayListExtra("players");
 
@@ -108,8 +118,33 @@ public class GameActivity extends AppCompatActivity {
         updateUI(); // Met à jour l'interface utilisateur
     }
 
+    private void playSlidingDiceSound() {
+        if (areSoundEffectsEnabled) {
+            MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.sliding);
+            mediaPlayer.setOnCompletionListener(MediaPlayer::release); // Libère la ressource une fois le son joué
+            mediaPlayer.start();
+        }
+    }
+
+    private void playButtonClickSound() {
+        if (areSoundEffectsEnabled) {
+            MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.button_click);
+            mediaPlayer.setOnCompletionListener(MediaPlayer::release); // Libère la ressource une fois le son joué
+            mediaPlayer.start();
+        }
+    }
+
+    private void playMenuSound() {
+        if (areSoundEffectsEnabled) {
+            MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.menu);
+            mediaPlayer.setOnCompletionListener(MediaPlayer::release); // Libère la ressource une fois le son joué
+            mediaPlayer.start();
+        }
+    }
+
     // Méthode pour afficher ou masquer le tableau des scores
     private void toggleScoreTableVisibility() {
+        playButtonClickSound();
         if (scoreTableLayout.getVisibility() == View.GONE) {
             showScoreTable();
         } else {
@@ -119,18 +154,94 @@ public class GameActivity extends AppCompatActivity {
 
     // Méthode pour afficher la boîte de dialogue de pause
     private void showPauseDialog() {
-        // Créer une boîte de dialogue pour mettre en pause ou quitter
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.pause_menu_title)
-                .setMessage(R.string.pause_menu_message)
-                .setPositiveButton(R.string.resume, (dialog, which) -> dialog.dismiss()) // Reprendre la partie
-                .setNegativeButton(R.string.quit, (dialog, which) -> {
-                    Intent intent = new Intent(GameActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish(); // Fermer l'activité actuelle
-                })
-                .setCancelable(false) // Ne permet pas la fermeture de la boîte de dialogue en dehors des boutons
-                .show();
+        playMenuSound();
+        // Créez un objet AlertDialog.Builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // Chargez la mise en page personnalisée
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_pause_menu, null);
+        builder.setView(dialogView);
+
+        // Créez la boîte de dialogue
+        AlertDialog dialog = builder.create();
+
+        // Référence aux boutons de la boîte de dialogue
+        Button resumeButton = dialogView.findViewById(R.id.resume_button);
+        Button quitButton = dialogView.findViewById(R.id.quit_button);
+        Button muteMusicButton = dialogView.findViewById(R.id.mute_music_button);
+        Button muteSfxButton = dialogView.findViewById(R.id.mute_sfx_button);
+
+        // Met à jour l'état des boutons mute/unmute en fonction de l'état de la musique et des effets sonores
+        muteMusicButton.setText(isMusicEnabled ? R.string.mute_music : R.string.unmute_music);
+        muteSfxButton.setText(areSoundEffectsEnabled ? R.string.mute_sfx : R.string.unmute_sfx);
+
+        // Gestion du bouton "Resume"
+        resumeButton.setOnClickListener(v -> {
+            playMenuSound();
+            dialog.dismiss(); // Ferme la boîte de dialogue
+        });
+
+        // Gestion du bouton "Quit"
+        quitButton.setOnClickListener(v -> {
+            playMenuSound();
+            // Arrêter la musique de fond
+            if (backgroundMusicPlayer != null) {
+                backgroundMusicPlayer.stop();
+                backgroundMusicPlayer.release();
+                backgroundMusicPlayer = null;
+            }
+            // Quitte la partie et revient à l'écran principal
+            Intent intent = new Intent(GameActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish(); // Ferme l'activité actuelle
+        });
+
+        // Gestion du bouton "Mute Music"
+        muteMusicButton.setOnClickListener(v -> {
+            toggleMusic();
+            muteMusicButton.setText(isMusicEnabled ? R.string.mute_music : R.string.unmute_music);
+        });
+
+        // Gestion du bouton "Mute SFX"
+        muteSfxButton.setOnClickListener(v -> {
+            toggleSoundEffects();
+            muteSfxButton.setText(areSoundEffectsEnabled ? R.string.mute_sfx : R.string.unmute_sfx);
+        });
+
+        // Afficher la boîte de dialogue
+        dialog.show();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Arrêter la musique de fond lorsque l'activité passe en arrière-plan ou l'écran est verrouillé
+        if (backgroundMusicPlayer != null && backgroundMusicPlayer.isPlaying()) {
+            backgroundMusicPlayer.pause(); // Mettre en pause la musique
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Reprendre la musique de fond lorsque l'activité revient au premier plan
+        if (backgroundMusicPlayer != null && isMusicEnabled) {
+            backgroundMusicPlayer.start(); // Reprendre la musique
+        }
+    }
+
+    private void toggleMusic() {
+        if (isMusicEnabled) {
+            backgroundMusicPlayer.pause();
+        } else {
+            backgroundMusicPlayer.start();
+        }
+        isMusicEnabled = !isMusicEnabled;
+    }
+
+    private void toggleSoundEffects() {
+        areSoundEffectsEnabled = !areSoundEffectsEnabled;
+        // Ajoutez la logique pour désactiver/activer les effets sonores dans toute l'application
     }
 
     // Méthode pour désactiver les interactions sur les dés
@@ -168,20 +279,26 @@ public class GameActivity extends AppCompatActivity {
         rollButton.setClickable(true);
     }
 
-    private void disableSetScoreButtonInteraction() {
-        rollButton.setClickable(false);
+    private void playDiceRollSound() {
+        if (areSoundEffectsEnabled) {
+            MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.dice_roll);
+            mediaPlayer.setOnCompletionListener(MediaPlayer::release); // Libère la ressource une fois le son joué
+            mediaPlayer.start();
+        }
     }
 
-    private void enableSetScoreButtonInteraction() {
-        rollButton.setClickable(true);
-    }
 
     // Méthode pour gérer le lancer des dés
     private void rollDice() {
         Player currentPlayer = players.get(currentPlayerIndex);
 
         if (rollsRemaining > 0) { // S'assurer qu'il reste des lancers disponibles
-                // Rendre les dés visibles et actifs après le premier lancer
+            // Jouer le son de lancer de dés
+            playDiceRollSound();
+            disableDiceInteraction();
+            disableRollInteraction();
+
+            // Rendre les dés visibles et actifs après le premier lancer
                 for (ImageView dice : diceImages) {
                     dice.setVisibility(View.VISIBLE); // Les rendre visibles
 
@@ -217,11 +334,7 @@ public class GameActivity extends AppCompatActivity {
                     enableDiceInteraction(); // Réactive les interactions avec les dés après l'animation
                     enableRollInteraction(); // Réactive les interactions avec le bouton de lancer après l'animation
                 }
-
-//                if (rollsRemaining == 0) {
-//                    new Handler().postDelayed(() -> showScoreTable(), 2000); // 1 secondes Affiche le tableau des scores après les lancers
-//                }
-            }, 500); // Animation pendant 2 secondes
+            }, 1500); // Animation pendant 1.5 secondes
         }
     }
 
@@ -238,6 +351,7 @@ public class GameActivity extends AppCompatActivity {
             // Si l'animation est encore en cours, ne pas permettre de verrouiller le dé
             return;
         }
+        playSlidingDiceSound();
 
         diceLocked[index] = !diceLocked[index]; // Inverse l'état du dé (gardé ou non)
 
@@ -389,6 +503,7 @@ public class GameActivity extends AppCompatActivity {
 
         // Logique pour sélectionner cette option et attribuer le score
         scoreButton.setOnClickListener(v -> {
+            playButtonClickSound();
             fillScoreForCurrentPlayer(text, score);
             layout.removeAllViews(); // Supprimer les options après sélection
             passTurnToNextPlayer(); // Passer au joueur suivant
@@ -440,6 +555,7 @@ public class GameActivity extends AppCompatActivity {
 
         // Lorsque le joueur clique sur le bouton, lui proposer de barrer une figure
         barButton.setOnClickListener(v -> {
+            playButtonClickSound();
             showBarFigureDialog(layout, barButton);
             barButton.setClickable(false);
         });
@@ -458,6 +574,7 @@ public class GameActivity extends AppCompatActivity {
 
         builder.setNegativeButton(R.string.cancel, (dialog, which) ->
         {
+            playButtonClickSound();
             dialog.dismiss();
             barButton.setClickable(true);
         });
@@ -488,7 +605,11 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void barFigure(String figure) {
-        Score currentPlayerScore = playerScores.get(players.get(currentPlayerIndex));
+        Player currentPlayer = players.get(currentPlayerIndex);
+        Score currentPlayerScore = playerScores.get(currentPlayer);
+
+        lastScoreFigure = figure;
+        lastPlayer = players.get(currentPlayerIndex);
 
         if (figure.equals(getString(R.string.score_one))) {
             currentPlayerScore.ones = 0;
@@ -518,8 +639,10 @@ public class GameActivity extends AppCompatActivity {
             currentPlayerScore.chance = 0;
         }
 
-        // Passer au joueur suivant
-        passTurnToNextPlayer();
+        if (!currentPlayer.isIa()) {
+            // Passer au joueur suivant
+            passTurnToNextPlayer();
+        }
         showScoreTable(); // Affiche les scores après avoir barré une figure
     }
 
@@ -750,11 +873,9 @@ public class GameActivity extends AppCompatActivity {
         } else {
             currentPlayerIndex = (currentPlayerIndex + 1) % players.size(); // Passer au joueur suivant
             rollsRemaining = 3; // Réinitialiser les lancers restants
-            resetDice(); // Réinitialiser les dés
-            if (currentPlayer.isIa()) {
-                disableDiceVisibility();
-            }
             updateUI(); // Mettre à jour l'interface utilisateur
+            resetDice(); // Réinitialiser les dés
+            //disableDiceVisibility();
             showScoreTable(); // Affiche les scores
             disableDiceInteraction(); // Désactive l'intéraction des dés
             updateLockedDiceSum(); // Met à jour la somme des dés gardés après chaque modification
@@ -768,8 +889,11 @@ public class GameActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.game_over)
                 .setMessage(message)
-                .setNegativeButton(R.string.resume, (dialog, which) -> dialog.dismiss()) // Reprendre la partie
+                .setNegativeButton(R.string.resume, (dialog, which) -> {
+                    playMenuSound();
+                    dialog.dismiss();})
                 .setPositiveButton(R.string.quit, (dialog, which) -> {
+                    playMenuSound();
                     Intent intent = new Intent(GameActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish(); // Fermer l'activité actuelle
@@ -856,9 +980,9 @@ public class GameActivity extends AppCompatActivity {
                                     }, 2000);
                                 }, 3000);
                             }, 3000); // Délai pour que l'animation se termine
-                        }, 3000); // Délai pour que la deuxième animation se termine
+                        }, 5000); // Délai pour que la deuxième animation se termine
                     }, 3000); // Délai pour que la deuxième animation se termine
-                }, 3000); // Délai pour que la première animation se termine
+                }, 5000); // Délai pour que la première animation se termine
             }, 3000);
         }
     }
@@ -885,6 +1009,7 @@ public class GameActivity extends AppCompatActivity {
             if (random.nextBoolean()) {
                 final int index = i;
                 handler.postDelayed(() -> {
+                    playSlidingDiceSound();
                     Log.d("GameActivity", "IA Facile: Verrouille le dé " + (index + 1) + " avec la valeur " + diceValues[index]);
                     moveDiceForIa(index); // Déplace le dé progressivement
                 }, i * 1000); // Appliquer un délai de 1 seconde entre chaque dé
@@ -997,6 +1122,7 @@ public class GameActivity extends AppCompatActivity {
         diceLocked[index] = true; // Verrouille le dé
         if (diceImages[index].getParent() != null) {
             ((ViewGroup) diceImages[index].getParent()).removeView(diceImages[index]); // Retire le dé de sa position actuelle
+            playSlidingDiceSound();
         }
 
         // Ajoute le dé dans la ligne correspondante pour les dés verrouillés
@@ -1186,6 +1312,14 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    private void playCountdownTickSound() {
+        if (areSoundEffectsEnabled) {
+            MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.countdown_tick);
+            mediaPlayer.setOnCompletionListener(MediaPlayer::release); // Libère la ressource une fois le son joué
+            mediaPlayer.start();
+        }
+    }
+
     @SuppressLint("SetTextI18n")
     private void updateUI() {
         // Mettre à jour l'interface utilisateur (indicateur de joueur, etc.)
@@ -1212,6 +1346,7 @@ public class GameActivity extends AppCompatActivity {
             // Débuter un décompte de 5 secondes
             countdownText.setVisibility(View.VISIBLE);
             disableDiceVisibility();
+            playCountdownTickSound(); // Jouer le son de décompte
 
             new Handler().post(new Runnable() {
                 int secondsRemaining = 5;

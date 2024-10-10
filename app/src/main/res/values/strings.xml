@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Yahtzee</string>
+    <string name="yahtzee_rules_url">https://en.wikipedia.org/wiki/Yahtzee</string>
     <string name="play">Play</string>
     <string name="change_language">Change Language</string>
     <string name="add_player">Add Player</string>
@@ -9,6 +10,13 @@
         <item>Easy</item>
         <item>Hard</item>
     </string-array>
+    <string name="mute_music">Mute Music</string>
+    <string name="unmute_music">Unmute Music</string>
+    <string name="mute_sfx">Mute SFX</string>
+    <string name="unmute_sfx">Unmute SFX</string>
+    <string name="rules_button">Rules</string>
+    <string name="disable_sound">Mute sound effect</string>
+    <string name="enable_sound">Unmute sound effect</string>
     <string name="easy">Easy</string>
     <string name="hard">Hard</string>
     <string name="switch_to_ia">Switch to IA</string>
@@ -29,6 +37,7 @@
     <string name="score_six">6 - Sum of 6</string>
     <string name="total_minor">Minor Total</string>
     <string name="bonus">Bonus 35 (+63)</string>
+    <string name="total_with_bonus">Total + Bonus 35 </string>
     <string name="brelan">Three of a kind</string>
     <string name="carre">Four of a kind</string>
     <string name="full">Full House</string>
